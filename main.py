@@ -64,20 +64,25 @@ async def sheduled(wait_for):
             match = div.find("h3").text.strip()
             times = div.find_all("div", attrs={"class": "tournaments-match"})
 
-            if len(times) == 1:
+            if len(times) == 1 and ("Мир" not in match and "Другие" not in match):
                 status = times[0].find("span", attrs={"class": "status"}).text.strip()
                 hour = times[0].find("span", attrs={"class": "data"}).text.strip()
                 time = times[0].find("div", attrs={"class": "teams"})
                 teams = time.find_all("div", attrs={"class": "team"})
                 points = time.find_all("span", attrs={"class": "point"})
-                team_1 = teams[0].text.strip()
-                team_2 = teams[1].text.strip()
-                point_1 = points[0].text.strip()
-                point_2 = points[1].text.strip()
-                detail = (hour, team_1, point_1, point_2, team_2)
+
+                try:
+                    team_1 = teams[0].text.strip()
+                    team_2 = teams[1].text.strip()
+                    point_1 = points[0].text.strip()
+                    point_2 = points[1].text.strip()
+                    detail = (hour, team_1, point_1, point_2, team_2)
+
+                except Exception as e:
+                    print(e)
 
                 if ((int(point_1) == 1 and int(point_2) == 1) or (int(point_1) == 2 and int(point_2) == 0)) \
-                        and status != "Завершен" and detail not in dbworker.get_last_footballs():
+                        and status != "Завершен" and detail not in dbworker.get_last_footballs() :
                     print(match)
 
                     print(detail[0], detail[1], detail[2], ":", detail[3], detail[4])
